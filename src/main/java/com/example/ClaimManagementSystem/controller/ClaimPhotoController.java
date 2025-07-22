@@ -1,8 +1,7 @@
 package com.example.ClaimManagementSystem.controller;
 
 import com.example.ClaimManagementSystem.model.ClaimPhoto;
-import com.example.ClaimManagementSystem.model.ClaimPhotoDTO;
-import com.example.ClaimManagementSystem.repository.ClaimPhotoDTORepository;
+import com.example.ClaimManagementSystem.model.dto.ClaimPhotoDTO;
 import com.example.ClaimManagementSystem.repository.ClaimPhotoRepository;
 import com.example.ClaimManagementSystem.service.ClaimPhotoStorageService;
 import io.jsonwebtoken.io.IOException;
@@ -22,13 +21,11 @@ public class ClaimPhotoController {
 
     private final ClaimPhotoStorageService storageService;
     private final ClaimPhotoRepository photoRepository;
-    private final ClaimPhotoDTORepository claimPhotoDTORepository;
 
     public ClaimPhotoController(ClaimPhotoStorageService storageService,
-                                ClaimPhotoRepository photoRepository, ClaimPhotoDTORepository claimPhotoDTORepository) {
+                                ClaimPhotoRepository photoRepository)  {
         this.storageService = storageService;
         this.photoRepository = photoRepository;
-        this.claimPhotoDTORepository = claimPhotoDTORepository;
     }
 
     @PostMapping
@@ -95,9 +92,9 @@ public class ClaimPhotoController {
             byte[] imageBytes = Files.readAllBytes(Paths.get(photo.getPath()));
             String base64 = Base64.getEncoder().encodeToString(imageBytes);
 
-            ClaimPhotoDTO claimPhotoDTO = new ClaimPhotoDTO();
-            claimPhotoDTO.setId(photo.getId());
-            claimPhotoDTO.setBase64Image(base64);
+            ClaimPhotoDTO claimPhotoDTO = new ClaimPhotoDTO(
+                    photo.getId(),base64
+            );
 
             return ResponseEntity.ok().body(claimPhotoDTO);
 

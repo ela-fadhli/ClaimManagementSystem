@@ -41,8 +41,8 @@ public class Contract {
     private Date endDate;
 
     @Basic
-    @Column(name="insured_id", nullable=false)
-    private Long insuredId;
+    @Column(name="insured_name", nullable=false)
+    private String insuredName;
 
     @Basic
     @Column(name="vehicle_plate", length=15, nullable=false)

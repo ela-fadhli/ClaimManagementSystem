@@ -39,8 +39,8 @@ public class ContractService {
         if(updatedContract.getEndDate() != null) {
             existingContract.setEndDate(updatedContract.getEndDate());
         }
-        if(updatedContract.getInsuredId() != null) {
-            existingContract.setInsuredId(updatedContract.getInsuredId());
+        if(updatedContract.getInsuredName() != null) {
+            existingContract.setInsuredName(updatedContract.getInsuredName());
         }
         if(updatedContract.getVehiclePlate() != null) {
             existingContract.setVehiclePlate(updatedContract.getVehiclePlate());
