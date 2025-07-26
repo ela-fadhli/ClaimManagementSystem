@@ -1,5 +1,6 @@
 package com.example.ClaimManagementSystem.model;
 
+import com.example.ClaimManagementSystem.ClaimStatus;
 import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -10,11 +11,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Basic;
+
+import java.time.Instant;
 import java.util.Date;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 @Entity
@@ -25,11 +29,6 @@ import jakarta.persistence.EnumType;
 @Table(name="claim")
 public class Claim {
 
-    private enum Status {
-        Ouvert,
-        Expertise,
-        Terminé
-    }
 
     @Id
     @Basic
@@ -46,6 +45,7 @@ public class Claim {
 
     @Column(name="creation_date")
     @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date creationDate;
 
     @Column(name="accident_date")
@@ -53,7 +53,7 @@ public class Claim {
     private Date accidentDate;
 
     @Enumerated(EnumType.STRING)
-    private Status status=Status.Ouvert;
+    private ClaimStatus status=ClaimStatus.Ouvert;
 
     @Column(name="contract_id", nullable=false)
     private Long contractId;

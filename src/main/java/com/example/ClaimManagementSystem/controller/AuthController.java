@@ -1,7 +1,7 @@
 package com.example.ClaimManagementSystem.controller;
 
-import com.example.ClaimManagementSystem.model.dto.AuthResponse;
-import com.example.ClaimManagementSystem.model.dto.LoginRequest;
+import com.example.ClaimManagementSystem.model.dto.response.AuthResponse;
+import com.example.ClaimManagementSystem.model.dto.request.LoginRequest;
 import com.example.ClaimManagementSystem.service.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,9 +36,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // 1. Authenticate the user
+            // user authentification
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
@@ -47,14 +46,13 @@ public class AuthController {
                     )
             );
 
-            // 2. Generate JWT token
+            // JWT token generation
             String jwtToken = jwtUtils.generateToken(authentication);
 
-            // 3. Return the token
             return ResponseEntity.ok(new AuthResponse(jwtToken));
 
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Invalid credentials"));
         }
     }
 }

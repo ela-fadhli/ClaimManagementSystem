@@ -1,6 +1,8 @@
 package com.example.ClaimManagementSystem.service;
 
 import com.example.ClaimManagementSystem.model.Contract;
+import com.example.ClaimManagementSystem.model.dto.request.ContractUpdateDTO;
+import com.example.ClaimManagementSystem.model.mapper.ContractMapper;
 import com.example.ClaimManagementSystem.repository.ContractRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.util.UUID;
 public class ContractService {
     @Autowired
     private final ContractRepository contractRepository;
+    @Autowired
+    private ContractMapper contractMapper;
 
     @Transactional
     public List<Contract> getAllContracts() {
@@ -29,27 +33,21 @@ public class ContractService {
     }
 
     @Transactional
-    public Contract updateContract(long contractId, Contract updatedContract) {
-        Contract existingContract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new RuntimeException("Contract not found"));
+    public Contract updateContract(String contractUuid, ContractUpdateDTO updatedContract) {
 
-        if(updatedContract.getStartDate() != null) {
-            existingContract.setStartDate(updatedContract.getStartDate());
-        }
-        if(updatedContract.getEndDate() != null) {
-            existingContract.setEndDate(updatedContract.getEndDate());
-        }
-        if(updatedContract.getInsuredName() != null) {
-            existingContract.setInsuredName(updatedContract.getInsuredName());
-        }
-        if(updatedContract.getVehiclePlate() != null) {
-            existingContract.setVehiclePlate(updatedContract.getVehiclePlate());
-        }
+        Contract existingContract = contractRepository.findByUuid(contractUuid);
+
+        contractMapper.ToEntityMapper(updatedContract, existingContract);
 
         return contractRepository.save(existingContract);
+
     }
 
     public Optional<Contract> findById(Long id) {
         return contractRepository.findById(id);
+    }
+
+    public Contract findContractByUuid(String contractUuid) {
+        return contractRepository.findByUuid(contractUuid);
     }
 }

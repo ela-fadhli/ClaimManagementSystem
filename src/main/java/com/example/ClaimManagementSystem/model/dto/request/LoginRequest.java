@@ -1,4 +1,4 @@
-package com.example.ClaimManagementSystem.model.dto;
+package com.example.ClaimManagementSystem.model.dto.request;
 
 public record LoginRequest(String email, String password) {
     public Object getEmail() {

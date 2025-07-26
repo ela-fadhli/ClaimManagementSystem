@@ -1,6 +1,10 @@
 package com.example.ClaimManagementSystem.controller;
 
 import com.example.ClaimManagementSystem.model.Claim;
+import com.example.ClaimManagementSystem.model.dto.request.ClaimCreateDTO;
+import com.example.ClaimManagementSystem.model.dto.request.ClaimUpdateDTO;
+import com.example.ClaimManagementSystem.model.dto.response.ClaimDTO;
+import com.example.ClaimManagementSystem.model.mapper.ClaimMapper;
 import com.example.ClaimManagementSystem.service.ClaimService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,33 +15,33 @@ import java.util.Optional;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/claims")
+@RequestMapping("/api/claim")
 @RequiredArgsConstructor
 public class ClaimController {
     private final ClaimService claimService;
+    private final ClaimMapper claimMapper;
 
     @PostMapping("/create")
-    public ResponseEntity<Claim> createClaim(@RequestBody Claim claim) {
-
-        return ResponseEntity.ok(claimService.registerClaim(claim));
+    public ResponseEntity<ClaimDTO> createClaim(@RequestBody ClaimCreateDTO claim) {
+        return ResponseEntity.ok(claimMapper.ToDtoMapper(claimService.registerClaim(claimMapper.ToEntityMapper(claim))));
     }
 
     @GetMapping
-    public ResponseEntity<List<Claim>> getAllClaims() {
-        return ResponseEntity.ok(claimService.getAllClaims());
+    public ResponseEntity<List<ClaimDTO>> getAllClaims() {
+        return ResponseEntity.ok(claimMapper.ToDtoMapper(claimService.getAllClaims()));
     }
 
 
-    @GetMapping("/{claimId}")
-    public ResponseEntity<Claim> getClaimWithDetails(@PathVariable String claimId) {
-        return ResponseEntity.ok(claimService.findClaimById(claimId));
+    @GetMapping("/{claimUuid}")
+    public ResponseEntity<ClaimDTO> getClaimWithDetails(@PathVariable String claimUuid) {
+        return ResponseEntity.ok(claimMapper.ToDtoMapper(claimService.findClaimById(claimUuid)));
     }
 
-    @PutMapping("/{claimId}")
-    public ResponseEntity<Claim> updateClaim(
-            @PathVariable String claimId,
-            @RequestBody Claim updatedClaim
+    @PutMapping("/{claimUuid}")
+    public ResponseEntity<ClaimDTO> updateClaim(
+            @PathVariable String claimUuid,
+            @RequestBody ClaimUpdateDTO updatedClaim
     ) {
-        return ResponseEntity.ok(claimService.updateClaim(claimId, updatedClaim));
+        return ResponseEntity.ok(claimMapper.ToDtoMapper(claimService.updateClaim(claimUuid, claimMapper.ToEntityMapper(updatedClaim, claimService.findClaimById(claimUuid)))));
     }
 }

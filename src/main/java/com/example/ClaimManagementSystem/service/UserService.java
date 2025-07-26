@@ -1,6 +1,9 @@
 package com.example.ClaimManagementSystem.service;
 
 import com.example.ClaimManagementSystem.model.User;
+import com.example.ClaimManagementSystem.model.dto.request.UserUpdateDTO;
+import com.example.ClaimManagementSystem.model.dto.response.UserDTO;
+import com.example.ClaimManagementSystem.model.mapper.UserMapper;
 import com.example.ClaimManagementSystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +21,8 @@ public class UserService {
     @Autowired
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserMapper userMapper;
 
 
     public User registerUser(User user) {
@@ -35,32 +40,20 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Long userId, User updatedUser) {
+    public User updateUser(String userUuid, UserUpdateDTO updatedUser) {
+        Long userId = userRepository.findByUuid(userUuid).getId();
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
 
-        if (updatedUser.getUserFirstName() != null) {
-            existingUser.setUserFirstName(updatedUser.getUserFirstName());
-        }
-        if (updatedUser.getUserLastName() != null) {
-            existingUser.setUserLastName(updatedUser.getUserLastName());
-        }
-        if (updatedUser.getUserName() != null) {
-            existingUser.setUserName(updatedUser.getUserName());
-        }
-        if (updatedUser.getPassword() != null) {
-            existingUser.setPassword(updatedUser.getPassword());
-        }
-        if (updatedUser.getEmail() != null) {
-            existingUser.setEmail(updatedUser.getEmail());
-        }
-
-        return userRepository.save(existingUser);
+        return userRepository.save(userMapper.ToEntity(updatedUser, existingUser));
     }
     
     public Optional<User> findById(long id) {
         return userRepository.findById(id);
     }
 
+    public User findByUuid(String userUuid) {
+        return userRepository.findByUuid(userUuid);
+    }
 }

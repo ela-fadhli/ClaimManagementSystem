@@ -1,6 +1,10 @@
 package com.example.ClaimManagementSystem.controller;
 
 import com.example.ClaimManagementSystem.model.Contract;
+import com.example.ClaimManagementSystem.model.dto.request.ContractCreateDTO;
+import com.example.ClaimManagementSystem.model.dto.request.ContractUpdateDTO;
+import com.example.ClaimManagementSystem.model.dto.response.ContractDTO;
+import com.example.ClaimManagementSystem.model.mapper.ContractMapper;
 import com.example.ClaimManagementSystem.service.ContractService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,30 +21,34 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ContractController {
     private final ContractService contractService;
+    private final ContractMapper contractMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<Contract> registerContract(@RequestBody Contract contract) {
+    public ResponseEntity<ContractDTO> registerContract(@RequestBody ContractCreateDTO contractCreateDTO) {
+        Contract contract = contractMapper.ToEntityMapper(contractCreateDTO);
         contract.setUuid(UUID.randomUUID().toString());
-        return ResponseEntity.ok(contractService.registerContract(contract));
+        return ResponseEntity.ok(contractMapper.ToDtoMapper(contractService.registerContract(contract)));
     }
 
-    @GetMapping("/{contractId}")
-    public ResponseEntity<Optional<Contract>> getContractProfile(@PathVariable Long contractId) {
-        return ResponseEntity.ok(contractService.findById(contractId));
+    @GetMapping("/{contractUuid}")
+    public ResponseEntity<ContractDTO> getContractProfile(@PathVariable String contractUuid) {
+        try {
+            return ResponseEntity.ok(contractMapper.ToDtoMapper(contractService.findContractByUuid(contractUuid)));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PutMapping("/{contractId}")
-    public ResponseEntity<Contract> updateContract(
-            @PathVariable Long contractId,
-            @RequestBody Contract updatedContract
+    @PutMapping("/{contractUuid}")
+    public ResponseEntity<ContractDTO> updateContract(
+            @PathVariable String contractUuid,
+            @RequestBody ContractUpdateDTO updatedContract
     ) {
-        return ResponseEntity.ok(contractService.updateContract(contractId, updatedContract));
+        return ResponseEntity.ok(contractMapper.ToDtoMapper(contractService.updateContract(contractUuid, updatedContract)));
     }
 
     @GetMapping
-    public ResponseEntity<List<Contract>> getAllContracts() {
-
-
-        return ResponseEntity.ok(contractService.getAllContracts());
+    public ResponseEntity<List<ContractDTO>> getAllContracts() {
+        return ResponseEntity.ok(contractMapper.ToDtoMapper(contractService.getAllContracts()));
     }
 }

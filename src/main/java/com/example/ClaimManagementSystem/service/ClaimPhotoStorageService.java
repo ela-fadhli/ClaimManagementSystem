@@ -1,6 +1,7 @@
 package com.example.ClaimManagementSystem.service;
 
 import com.example.ClaimManagementSystem.model.ClaimPhoto;
+import com.example.ClaimManagementSystem.repository.ClaimRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,15 +15,17 @@ import java.util.UUID;
 public class ClaimPhotoStorageService {
 
     private final Path rootLocation;
+    private final ClaimRepository claimRepository;
 
-    public ClaimPhotoStorageService(@Value("${file.upload-dir}") String uploadDir) throws IOException {
+    public ClaimPhotoStorageService(@Value("${file.upload-dir}") String uploadDir, ClaimRepository claimRepository) throws IOException {
         this.rootLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(this.rootLocation);
+        this.claimRepository = claimRepository;
     }
 
-    public ClaimPhoto storeFile(MultipartFile file, Long claimId) throws IOException {
+    public ClaimPhoto storeFile(MultipartFile file, String claimId) throws IOException {
         // Create claim-specific directory
-        Path claimDir = this.rootLocation.resolve(claimId.toString());
+        Path claimDir = this.rootLocation.resolve(claimId);
         Files.createDirectories(claimDir);
 
         // Generate unique filename
@@ -39,11 +42,11 @@ public class ClaimPhotoStorageService {
         // Create and return ClaimPhoto entity
         ClaimPhoto photo = new ClaimPhoto();
         photo.setUuid(uuid);
-        photo.setPath(targetPath + "");  // Stores just the filename, not full path
+        photo.setPath(targetPath + "");
         photo.setOriginalFileName(file.getOriginalFilename());
         photo.setContentType(file.getContentType());
         photo.setSize(file.getSize());
-        photo.setClaimId(claimId);
+        photo.setClaimId(claimRepository.findByUuid(claimId).getId());
         photo.setCreatedAt(new Date());
 
         return photo;
@@ -53,8 +56,8 @@ public class ClaimPhotoStorageService {
         return rootLocation.resolve(claimId.toString()).resolve(filename);
     }
 
-    public void deleteFile(Long claimId, String filename) throws IOException {
-        Path filePath = loadFile(claimId, filename);
+    public void deleteFile(String claimUuid, String filename) throws IOException {
+        Path filePath = loadFile(claimRepository.findByUuid(claimUuid).getId(), filename);
         Files.deleteIfExists(filePath);
     }
 }

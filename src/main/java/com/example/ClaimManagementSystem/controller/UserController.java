@@ -1,6 +1,9 @@
 package com.example.ClaimManagementSystem.controller;
 
 import com.example.ClaimManagementSystem.model.User;
+import com.example.ClaimManagementSystem.model.dto.request.UserUpdateDTO;
+import com.example.ClaimManagementSystem.model.dto.response.UserDTO;
+import com.example.ClaimManagementSystem.model.mapper.UserMapper;
 import com.example.ClaimManagementSystem.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,22 +17,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.registerUser(user));
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Optional<User>> getUserProfile(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.findById(userId));
+    @GetMapping("/{userUuid}")
+    public ResponseEntity<UserDTO> getUserProfile(@PathVariable String userUuid) {
+        return ResponseEntity.ok(userMapper.ToDtoMapper(userService.findByUuid(userUuid)));
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(
-            @PathVariable Long userId,
-            @RequestBody User updatedUser
+    @PutMapping("/{userUuid}")
+    public ResponseEntity<UserDTO> updateUser(
+            @PathVariable String userUuid,
+            @RequestBody UserUpdateDTO updatedUser
     ) {
-        return ResponseEntity.ok(userService.updateUser(userId, updatedUser));
+        return ResponseEntity.ok(userMapper.ToDtoMapper(userService.updateUser(userUuid, updatedUser)));
     }
 }

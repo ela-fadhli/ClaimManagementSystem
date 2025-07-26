@@ -1,8 +1,11 @@
 package com.example.ClaimManagementSystem.controller;
 
 import com.example.ClaimManagementSystem.model.ClaimPhoto;
-import com.example.ClaimManagementSystem.model.dto.ClaimPhotoDTO;
+import com.example.ClaimManagementSystem.model.dto.PhotoDTO;
+import com.example.ClaimManagementSystem.model.dto.response.ClaimPhotoDTO;
+import com.example.ClaimManagementSystem.model.mapper.ClaimPhotoMapper;
 import com.example.ClaimManagementSystem.repository.ClaimPhotoRepository;
+import com.example.ClaimManagementSystem.repository.ClaimRepository;
 import com.example.ClaimManagementSystem.service.ClaimPhotoStorageService;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.http.*;
@@ -16,28 +19,32 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/claims/{claimId}/photos")
+@RequestMapping("/api/claims/{claimUuid}/photos")
 public class ClaimPhotoController {
 
     private final ClaimPhotoStorageService storageService;
     private final ClaimPhotoRepository photoRepository;
+    private final ClaimPhotoMapper claimPhotoMapper;
+    private final ClaimRepository claimRepository;
 
     public ClaimPhotoController(ClaimPhotoStorageService storageService,
-                                ClaimPhotoRepository photoRepository)  {
+                                ClaimPhotoRepository photoRepository, ClaimPhotoMapper claimPhotoMapper, ClaimRepository claimRepository) {
         this.storageService = storageService;
         this.photoRepository = photoRepository;
+        this.claimPhotoMapper = claimPhotoMapper;
+        this.claimRepository = claimRepository;
     }
 
     @PostMapping
-    public ResponseEntity<ClaimPhoto> uploadPhoto(
-            @PathVariable Long claimId,
+    public ResponseEntity<ClaimPhotoDTO> uploadPhoto(
+            @PathVariable String claimUuid,
             @RequestParam("file") MultipartFile file
     ) throws IOException, java.io.IOException {
 
-        ClaimPhoto photo = storageService.storeFile(file, claimId);
+        ClaimPhoto photo = storageService.storeFile(file, claimUuid);
         ClaimPhoto savedPhoto = photoRepository.save(photo);
 
-        return ResponseEntity.ok(savedPhoto);
+        return ResponseEntity.ok(claimPhotoMapper.ToDtoMapper(savedPhoto));
     }
 
     /*@GetMapping("/{photoId}")
@@ -58,42 +65,43 @@ public class ClaimPhotoController {
                 .body(fileContent);
     }*/
 
-    @DeleteMapping("/{photoId}")
+    @DeleteMapping("/{photoUuid}")
     public ResponseEntity<Void> deletePhoto(
-            @PathVariable Long claimId,
-            @PathVariable Long photoId) throws IOException, java.io.IOException {
+            @PathVariable String claimUuid,
+            @PathVariable String photoUuid) throws IOException, java.io.IOException {
 
-        ClaimPhoto photo = photoRepository.findById(photoId)
-                .orElseThrow(() -> new RuntimeException("Photo not found"));
+        try {
+            ClaimPhoto photo = photoRepository.findByUuid(photoUuid);
+            storageService.deleteFile(claimUuid, photo.getPath());
+            photoRepository.delete(photo);
 
-        storageService.deleteFile(claimId, photo.getPath());
-        photoRepository.delete(photo);
-
-        return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping
-    public ResponseEntity<List<ClaimPhoto>> getClaimPhotos(@PathVariable Long claimId) {
-        List<ClaimPhoto> photos = photoRepository.findByClaimId(claimId);
-        return ResponseEntity.ok(photos);
+    public ResponseEntity<List<ClaimPhotoDTO>> getClaimPhotos(@PathVariable String claimUuid) {
+        List<ClaimPhoto> photos = photoRepository.findByClaimId(claimRepository.findByUuid(claimUuid).getId());
+        return ResponseEntity.ok(claimPhotoMapper.ToDtoMapper(photos));
     }
 
-    @GetMapping("/{photoId}")
-    public ResponseEntity<ClaimPhotoDTO> getClaimPhotoById(@PathVariable Long photoId) {
-        Optional<ClaimPhoto> optionalPhoto = photoRepository.findById(photoId);
-
-        if (optionalPhoto.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        ClaimPhoto photo = optionalPhoto.get();
+    @GetMapping("/{photoUuid}")
+    public ResponseEntity<PhotoDTO> getClaimPhotoById(@PathVariable String photoUuid) {
 
         try {
+            ClaimPhoto photo;
+            try {
+                photo = photoRepository.findByUuid(photoUuid);
+            } catch (RuntimeException e) {
+                return ResponseEntity.notFound().build();
+            }
             byte[] imageBytes = Files.readAllBytes(Paths.get(photo.getPath()));
             String base64 = Base64.getEncoder().encodeToString(imageBytes);
 
-            ClaimPhotoDTO claimPhotoDTO = new ClaimPhotoDTO(
-                    photo.getId(),base64
+            PhotoDTO claimPhotoDTO = new PhotoDTO(
+                    photo.getId(), base64
             );
 
             return ResponseEntity.ok().body(claimPhotoDTO);
