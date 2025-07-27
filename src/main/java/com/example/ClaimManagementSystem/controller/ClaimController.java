@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/claim")
+@RequestMapping("/claim")
 @RequiredArgsConstructor
 public class ClaimController {
     private final ClaimService claimService;

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/claims/{claimUuid}/photos")
+@RequestMapping("/claims/{claimUuid}/photos")
 public class ClaimPhotoController {
 
     private final ClaimPhotoStorageService storageService;
