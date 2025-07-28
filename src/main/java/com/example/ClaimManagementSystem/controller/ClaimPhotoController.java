@@ -48,7 +48,7 @@ public class ClaimPhotoController {
         return ResponseEntity.ok(claimPhotoMapper.ToDtoMapper(claimPhotoService.getClaimPhotos(claimUuid)));
     }
 
-    @GetMapping("/{photoUuid}")
+    @GetMapping("/{claimUuid}/{photoUuid}")
     public ResponseEntity<PhotoDTO> getClaimPhotoByUuid(@PathVariable String photoUuid) {
             return ResponseEntity.ok().body(claimPhotoService.getPhoto(photoUuid));
     }

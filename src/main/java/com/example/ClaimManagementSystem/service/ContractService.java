@@ -2,7 +2,6 @@ package com.example.ClaimManagementSystem.service;
 
 import com.example.ClaimManagementSystem.model.Contract;
 import com.example.ClaimManagementSystem.model.dto.request.ContractUpdateDTO;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 

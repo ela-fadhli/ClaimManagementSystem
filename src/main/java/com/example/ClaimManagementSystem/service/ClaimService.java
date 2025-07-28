@@ -1,7 +1,6 @@
 package com.example.ClaimManagementSystem.service;
 
 import com.example.ClaimManagementSystem.model.Claim;
-import org.springframework.stereotype.Service;
 import java.util.List;
 
 public interface ClaimService {

@@ -3,6 +3,7 @@ package com.example.ClaimManagementSystem.service.impl;
 import com.example.ClaimManagementSystem.model.ClaimPhoto;
 import com.example.ClaimManagementSystem.model.dto.PhotoDTO;
 import com.example.ClaimManagementSystem.repository.ClaimPhotoRepository;
+import com.example.ClaimManagementSystem.repository.ClaimRepository;
 import com.example.ClaimManagementSystem.service.ClaimPhotoService;
 import com.example.ClaimManagementSystem.service.UserService;
 import io.jsonwebtoken.io.IOException;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClaimPhotoServiceImpl implements ClaimPhotoService {
     final private ClaimPhotoRepository photoRepository;
-    final private UserService claimRepository;
+    final private ClaimRepository claimRepository;
 
     @Override
     public List<ClaimPhoto> getClaimPhotos(String claimUuid){
