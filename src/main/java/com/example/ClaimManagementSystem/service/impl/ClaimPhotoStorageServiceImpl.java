@@ -1,6 +1,7 @@
 package com.example.ClaimManagementSystem.service.impl;
 
 import com.example.ClaimManagementSystem.model.ClaimPhoto;
+import com.example.ClaimManagementSystem.repository.ClaimPhotoRepository;
 import com.example.ClaimManagementSystem.repository.ClaimRepository;
 import com.example.ClaimManagementSystem.service.ClaimPhotoStorageService;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +18,11 @@ public class ClaimPhotoStorageServiceImpl implements ClaimPhotoStorageService {
 
     private final Path rootLocation;
     private final ClaimRepository claimRepository;
+    private final ClaimPhotoRepository photoRepository;
 
-    public ClaimPhotoStorageServiceImpl(@Value("${file.upload-dir}") String uploadDir, ClaimRepository claimRepository) throws IOException {
+    public ClaimPhotoStorageServiceImpl(@Value("${file.upload-dir}") String uploadDir, ClaimRepository claimRepository, ClaimPhotoRepository photoRepository) throws IOException {
         this.rootLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+        this.photoRepository = photoRepository;
         Files.createDirectories(this.rootLocation);
         this.claimRepository = claimRepository;
     }
@@ -51,7 +54,7 @@ public class ClaimPhotoStorageServiceImpl implements ClaimPhotoStorageService {
         photo.setClaimId(claimRepository.findByUuid(claimId).getId());
         photo.setCreatedAt(new Date());
 
-        return photo;
+        return photoRepository.save(photo);
     }
 
     @Override
@@ -60,8 +63,11 @@ public class ClaimPhotoStorageServiceImpl implements ClaimPhotoStorageService {
     }
 
     @Override
-    public void deleteFile(String claimUuid, String filename) throws IOException {
-        Path filePath = loadFile(claimRepository.findByUuid(claimUuid).getId(), filename);
+    public void deleteFile(String claimUuid, String photoUuid) throws IOException {
+        ClaimPhoto photo = photoRepository.findByUuid(photoUuid);
+        String fileName = photo.getPath();
+        Path filePath = loadFile(claimRepository.findByUuid(claimUuid).getId(), fileName);
         Files.deleteIfExists(filePath);
+        photoRepository.delete(photo);
     }
 }

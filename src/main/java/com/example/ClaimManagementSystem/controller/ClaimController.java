@@ -1,6 +1,5 @@
 package com.example.ClaimManagementSystem.controller;
 
-import com.example.ClaimManagementSystem.model.Claim;
 import com.example.ClaimManagementSystem.model.dto.request.ClaimCreateDTO;
 import com.example.ClaimManagementSystem.model.dto.request.ClaimUpdateDTO;
 import com.example.ClaimManagementSystem.model.dto.response.ClaimDTO;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
-import java.util.Optional;
 import java.util.List;
 
 @RestController

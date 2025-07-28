@@ -22,7 +22,6 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
-    private final UserDetailsService userDetailsService;
 
     @Autowired
     public AuthController(
@@ -32,7 +31,6 @@ public class AuthController {
     ) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
-        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/login")
