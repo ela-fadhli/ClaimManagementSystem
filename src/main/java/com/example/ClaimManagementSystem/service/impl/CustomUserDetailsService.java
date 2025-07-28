@@ -1,4 +1,4 @@
-package com.example.ClaimManagementSystem.service;
+package com.example.ClaimManagementSystem.service.impl;
 
 import com.example.ClaimManagementSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

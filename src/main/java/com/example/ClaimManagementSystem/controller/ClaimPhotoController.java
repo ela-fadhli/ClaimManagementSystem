@@ -8,6 +8,7 @@ import com.example.ClaimManagementSystem.repository.ClaimPhotoRepository;
 import com.example.ClaimManagementSystem.repository.ClaimRepository;
 import com.example.ClaimManagementSystem.service.ClaimPhotoStorageService;
 import io.jsonwebtoken.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/claims/{claimUuid}/photos")
+@RequiredArgsConstructor
 public class ClaimPhotoController {
 
     private final ClaimPhotoStorageService storageService;
@@ -27,13 +29,13 @@ public class ClaimPhotoController {
     private final ClaimPhotoMapper claimPhotoMapper;
     private final ClaimRepository claimRepository;
 
-    public ClaimPhotoController(ClaimPhotoStorageService storageService,
+    /*public ClaimPhotoController(ClaimPhotoStorageService storageService,
                                 ClaimPhotoRepository photoRepository, ClaimPhotoMapper claimPhotoMapper, ClaimRepository claimRepository) {
         this.storageService = storageService;
         this.photoRepository = photoRepository;
         this.claimPhotoMapper = claimPhotoMapper;
         this.claimRepository = claimRepository;
-    }
+    }*/
 
     @PostMapping
     public ResponseEntity<ClaimPhotoDTO> uploadPhoto(
