@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/claims/{claimUuid}/photos")
+@RequestMapping("/claim-photo")
 @RequiredArgsConstructor
 public class ClaimPhotoController {
 
@@ -37,7 +37,7 @@ public class ClaimPhotoController {
         this.claimRepository = claimRepository;
     }*/
 
-    @PostMapping
+    @PostMapping("/{claimUuid}")
     public ResponseEntity<ClaimPhotoDTO> uploadPhoto(
             @PathVariable String claimUuid,
             @RequestParam("file") MultipartFile file
@@ -49,7 +49,7 @@ public class ClaimPhotoController {
         return ResponseEntity.ok(claimPhotoMapper.ToDtoMapper(savedPhoto));
     }
 
-    /*@GetMapping("/{photoId}")
+    /*@GetMapping("/{claimUuid}/{photoId}")
     public ResponseEntity<byte[]> getPhoto(
             @PathVariable Long claimId,
             @PathVariable Long photoId) throws IOException, java.io.IOException {
@@ -67,7 +67,7 @@ public class ClaimPhotoController {
                 .body(fileContent);
     }*/
 
-    @DeleteMapping("/{photoUuid}")
+    @DeleteMapping("/{claimUuid}/{photoUuid}")
     public ResponseEntity<Void> deletePhoto(
             @PathVariable String claimUuid,
             @PathVariable String photoUuid) throws IOException, java.io.IOException {
@@ -83,13 +83,13 @@ public class ClaimPhotoController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/{claimUuid}")
     public ResponseEntity<List<ClaimPhotoDTO>> getClaimPhotos(@PathVariable String claimUuid) {
         List<ClaimPhoto> photos = photoRepository.findByClaimId(claimRepository.findByUuid(claimUuid).getId());
         return ResponseEntity.ok(claimPhotoMapper.ToDtoMapper(photos));
     }
 
-    @GetMapping("/{photoUuid}")
+    @GetMapping("/{claimUuid}/{photoUuid}")
     public ResponseEntity<PhotoDTO> getClaimPhotoById(@PathVariable String photoUuid) {
 
         try {
