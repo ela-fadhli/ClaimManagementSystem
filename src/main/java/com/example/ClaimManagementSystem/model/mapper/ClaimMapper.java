@@ -1,6 +1,7 @@
 package com.example.ClaimManagementSystem.model.mapper;
 
 import com.example.ClaimManagementSystem.model.Claim;
+import com.example.ClaimManagementSystem.repository.ContractRepository;
 import com.example.ClaimManagementSystem.model.dto.request.ClaimCreateDTO;
 import com.example.ClaimManagementSystem.model.dto.request.ClaimUpdateDTO;
 import com.example.ClaimManagementSystem.model.dto.response.ClaimDTO;
@@ -12,8 +13,15 @@ import java.util.List;
 @Component
 public class ClaimMapper {
 
+    private final ContractRepository contractRepository;
+
+    public ClaimMapper(ContractRepository contractRepository) {
+        this.contractRepository = contractRepository;
+    }
+
     public ClaimDTO ToDtoMapper(Claim claim) {
-        return new ClaimDTO(claim.getUuid(), claim.getClaimNumber(), claim.getCreationDate(), claim.getAccidentDate(), claim.getStatus(), claim.getContractId());
+        return new ClaimDTO(claim.getUuid(), claim.getClaimNumber(), claim.getCreationDate(), claim.getAccidentDate(), claim.getStatus(), contractRepository.findById(claim.getContractId()).orElseThrow(() -> new RuntimeException("Contract not found with id: " + claim.getContractId()))
+                .getUuid());
     }
 
     public List<ClaimDTO> ToDtoMapper(List<Claim> claims) {

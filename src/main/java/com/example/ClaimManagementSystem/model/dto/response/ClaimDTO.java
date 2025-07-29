@@ -11,6 +11,6 @@ public record ClaimDTO(
         Date creationDate,
         Date accidentDate,
         ClaimStatus status,
-        Long contractId
+        String contractUuid
 ) {
 }
