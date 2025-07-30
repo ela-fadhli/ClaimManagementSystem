@@ -12,8 +12,8 @@ public record ClaimPhotoDTO(
         String path,
         String OriginalFileName,
         String contentType,
+        String claimUuid,
         Long size,
-        Long claimId,
         Date createdAt
 ) {
 }
