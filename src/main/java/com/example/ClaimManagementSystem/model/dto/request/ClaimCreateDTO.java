@@ -8,6 +8,6 @@ public record ClaimCreateDTO(
         String claimNumber,
         Date accidentDate,
         ClaimStatus status,
-        Long contractId
+        String contractUuid
 ) {
 }

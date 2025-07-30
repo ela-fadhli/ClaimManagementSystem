@@ -37,7 +37,7 @@ public class ClaimMapper {
         claim.setClaimNumber(claimDTO.claimNumber());
         claim.setAccidentDate(claimDTO.accidentDate());
         claim.setStatus(claimDTO.status());
-        claim.setContractId(claimDTO.contractId());
+        claim.setContractId(contractRepository.findByUuid(claimDTO.contractUuid()).getId());
         return claim;
     }
 
@@ -49,8 +49,8 @@ public class ClaimMapper {
         if(claimDTO.accidentDate().isPresent()){
             claim.setAccidentDate(claimDTO.accidentDate().get());
         }
-        if(claimDTO.contractId().isPresent()){
-            claim.setContractId(claimDTO.contractId().get());
+        if(claimDTO.contractUuid().isPresent()){
+            claim.setContractId(contractRepository.findByUuid(claimDTO.contractUuid().get()).getId());
         }
         if(claimDTO.status().isPresent()){
             claim.setStatus(claimDTO.status().get());

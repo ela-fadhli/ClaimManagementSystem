@@ -9,6 +9,6 @@ public record ClaimUpdateDTO(
         Optional<String> claimNumber,
         Optional<Date> accidentDate,
         Optional<ClaimStatus> status,
-        Optional<Long> contractId
+        Optional<String> contractUuid
 ) {
 }
